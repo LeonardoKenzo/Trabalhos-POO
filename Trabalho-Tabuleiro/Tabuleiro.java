@@ -9,9 +9,7 @@ public class Tabuleiro {
     
     public boolean up(int linha, int coluna){
         if(isInTable(linha, coluna, length) && isInTable(linha + 1, coluna, length)){
-            int temp = table[linha + 1][coluna];
-            table[linha][coluna] = temp;
-            table[linha + 1][coluna] = 0;
+            swapTable(linha, coluna, linha + 1, coluna);
             return true;
         }
         return false;
@@ -19,9 +17,7 @@ public class Tabuleiro {
 
     public boolean right(int linha, int coluna){
         if(isInTable(linha, coluna, length) && isInTable(linha, coluna - 1, length)){
-            int temp = table[linha][coluna - 1];
-            table[linha][coluna] = temp;
-            table[linha][coluna - 1] = 0;
+            swapTable(linha, coluna, linha, coluna - 1);
             return true;
         }
         return false;
@@ -29,9 +25,7 @@ public class Tabuleiro {
 
     public boolean left(int linha, int coluna){
         if(isInTable(linha, coluna, length) && isInTable(linha, coluna + 1, length)){
-            int temp = table[linha][coluna + 1];
-            table[linha][coluna] = temp;
-            table[linha][coluna + 1] = 0;
+            swapTable(linha, coluna, linha, coluna + 1);
             return true;
         }
         return false;
@@ -39,9 +33,7 @@ public class Tabuleiro {
 
     public boolean down(int linha, int coluna){
         if(isInTable(linha, coluna, length) && isInTable(linha - 1, coluna, length)){
-            int temp = table[linha - 1][coluna];
-            table[linha][coluna] = temp;
-            table[linha - 1][coluna] = 0;
+            swapTable(linha, coluna, linha - 1, coluna);
             return true;
         }
         return false;
@@ -80,5 +72,11 @@ public class Tabuleiro {
     
     private boolean isInTable(int linha, int coluna, int length){
         return !(linha >= length || linha < 0 || coluna >= length || coluna < 0);
+    }
+
+    private void swapTable(int linha1, int coluna1, int linha2, int coluna2){
+        int temp = table[linha1][coluna1];
+        table[linha1][coluna1] = table[linha2][coluna2];
+        table[linha2][coluna2] = temp;
     }
 }
