@@ -1,9 +1,7 @@
-package TrabalhoGrafo;
 import java.util.ArrayList;
 
 public abstract class Grafo {
     protected ArrayList<String> vertices;
-    protected ArrayList<ArrayList<Integer>> matriz;
 
     public abstract void adicionarVertice(String vertice);
     public abstract void removerVertice(String vertice);

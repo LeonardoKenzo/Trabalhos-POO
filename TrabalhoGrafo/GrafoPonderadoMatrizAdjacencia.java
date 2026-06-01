@@ -1,7 +1,8 @@
-import TrabalhoGrafo.Grafo;
 import java.util.ArrayList;
+import java.util.Collections;
 
 public class GrafoPonderadoMatrizAdjacencia extends Grafo {
+    private ArrayList<ArrayList<Integer>> matriz;
 
     public GrafoPonderadoMatrizAdjacencia(){
         this.matriz = new ArrayList<>();
@@ -124,23 +125,60 @@ public class GrafoPonderadoMatrizAdjacencia extends Grafo {
 
     @Override
     public String toString() {
+
+        ArrayList<String> arestas = new ArrayList<>();
+        ArrayList<String> verticesIsolados = new ArrayList<>();
+
+        for (int i = 0; i < vertices.size(); i++) {
+            for (int j = i + 1; j < vertices.size(); j++) {
+
+                if (matriz.get(i).get(j) != -1) {
+
+                    String v1 = vertices.get(i);
+                    String v2 = vertices.get(j);
+
+                    if(v1.compareTo(v2) < 0){
+                        arestas.add(
+                            "\"" + v1 + "\" -- \"" + v2 + "\" [label=\"" + matriz.get(i).get(j) + "\"];"
+                        );
+                    }
+                    else {
+                        arestas.add(
+                            "\"" + v2 + "\" -- \"" + v1 + "\" [label=\"" + matriz.get(i).get(j) + "\"];"
+                        );
+                    }
+                }
+            }
+
+            boolean isIsolated = true;
+            for(int j = 0; j < vertices.size(); j++){
+                if(matriz.get(i).get(j) != -1){
+                    isIsolated = false;
+                    break;
+                }
+            }
+
+            if(isIsolated){
+                verticesIsolados.add(
+                    "\"" + vertices.get(i) + "\";"
+                );
+            }
+        }
+
+        Collections.sort(arestas);
+        Collections.sort(verticesIsolados);
+
         StringBuilder sb = new StringBuilder();
 
         sb.append("graph {\n");
-        // Procura a aresta entre os vertices evitando repetições
-        for (int i = 0; i < vertices.size(); i++){
-            for (int j = i + 1; j < vertices.size(); j++){
-                if (matriz.get(i).get(j) != -1){
-                    sb.append(" \"").
-                    append(vertices.get(i))
-                    .append("\" -- \"")
-                    .append(vertices.get(j))
-                    .append("\" [label=\"")
-                    .append(matriz.get(i).get(j))
-                    .append("\"];\n");
-                }
-            }
+
+        for(String vertice : verticesIsolados){
+            sb.append("    ").append(vertice).append("\n");
         }
+        for (String aresta : arestas) {
+            sb.append("    ").append(aresta).append("\n");
+        }
+
         sb.append("}");
 
         return sb.toString();

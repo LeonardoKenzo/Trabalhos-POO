@@ -1,29 +1,21 @@
 import java.util.ArrayList;
 import java.util.Collections;
 
-public class GrafoMatrizAdjacencia extends Grafo{
-    private ArrayList<ArrayList<Integer>> matriz;
+public class GrafoListaAdjacencia extends Grafo {
+    private ArrayList<ArrayList<String>> listaAdjacencia;
 
-    public GrafoMatrizAdjacencia(){
-        this.matriz = new ArrayList<>();
-        this.vertices = new ArrayList<>();
+    public GrafoListaAdjacencia() {
+        vertices = new ArrayList<>();
+        listaAdjacencia = new ArrayList<>();
     }
 
     @Override
     public void adicionarVertice(String vertice) {
+        if(vertices.contains(vertice)){
+            return; // Evita adicionar vértices duplicados
+        }
         vertices.add(vertice);
-
-        // Adiciona uma nova coluna para cada linha existente
-        for (ArrayList<Integer> linha : matriz){
-            linha.add(-1);
-        }
-
-        // Adiciona uma nova linha do novo vertice
-        ArrayList<Integer> novaLinha = new ArrayList<>();
-        for (int i = 0; i < matriz.size() + 1; i++){
-            novaLinha.add(-1); // -1 indica ausência de aresta
-        }
-        matriz.add(novaLinha);
+        listaAdjacencia.add(new ArrayList<>());
     }
 
     @Override
@@ -31,17 +23,15 @@ public class GrafoMatrizAdjacencia extends Grafo{
 
         int index = vertices.indexOf(vertice);
         if (index != -1){
-
-            // Remove a linha correspondente ao vertice
-            matriz.remove(index);
-            
+    
             // Remove a coluna correspondente ao vertice
-            for (ArrayList<Integer> linha : matriz){
-                linha.remove(index);
+            for (ArrayList<String> vizinhos : listaAdjacencia){
+                vizinhos.remove(vertice);
             }
-
+            
             // Remove o vertice da lista de vertices
             vertices.remove(vertice);
+            listaAdjacencia.remove(index);
         }
     }
 
@@ -50,10 +40,18 @@ public class GrafoMatrizAdjacencia extends Grafo{
         int indexOrigem = vertices.indexOf(origem);
         int indexDestino = vertices.indexOf(destino);
 
-        if (indexOrigem != -1 && indexDestino != -1){
-            matriz.get(indexOrigem).set(indexDestino, 1);
-            matriz.get(indexDestino).set(indexOrigem, 1);
+        if (indexOrigem == -1 && indexDestino == -1){
+            return;
         }
+
+        if(!listaAdjacencia.get(indexOrigem).contains(destino)){
+            listaAdjacencia.get(indexOrigem).add(destino);
+        }
+
+        if(!listaAdjacencia.get(indexDestino).contains(origem)){
+            listaAdjacencia.get(indexDestino).add(origem);
+        }
+
     }
 
     @Override
@@ -62,8 +60,8 @@ public class GrafoMatrizAdjacencia extends Grafo{
         int indexDestino = vertices.indexOf(destino);
 
         if (indexOrigem != -1 && indexDestino != -1){
-            matriz.get(indexOrigem).set(indexDestino, -1);
-            matriz.get(indexDestino).set(indexOrigem, -1);
+            listaAdjacencia.get(indexOrigem).remove(destino);
+            listaAdjacencia.get(indexDestino).remove(origem);
         }
     }
     
@@ -78,7 +76,7 @@ public class GrafoMatrizAdjacencia extends Grafo{
         int indexDestino = vertices.indexOf(destino);
 
         if (indexOrigem != -1 && indexDestino != -1){
-            return matriz.get(indexOrigem).get(indexDestino) == 1;
+            return listaAdjacencia.get(indexOrigem).contains(destino);
         }
 
         return false;   
@@ -90,12 +88,7 @@ public class GrafoMatrizAdjacencia extends Grafo{
 
         // Se o vertice existir
         if (index != -1){
-            int grau = 0;
-            for (int valor : matriz.get(index)){
-                if (valor == 1)
-                    grau++;
-            }
-            return grau;
+            return listaAdjacencia.get(index).size();
         }
 
         return -1;// Retorna -1 se o vertice não existir
@@ -109,11 +102,8 @@ public class GrafoMatrizAdjacencia extends Grafo{
     @Override
     public int tamanho() {
         int tamanho = 0;
-        for (ArrayList<Integer> linha : matriz){
-            for (int valor : linha){
-                if (valor == 1)
-                    tamanho++;
-            }
+        for (ArrayList<String> linha : listaAdjacencia){
+            tamanho += linha.size();
         }
 
         return tamanho / 2; // Cada aresta é contada duas vezes
@@ -126,38 +116,23 @@ public class GrafoMatrizAdjacencia extends Grafo{
         ArrayList<String> verticesIsolados = new ArrayList<>();
 
         for (int i = 0; i < vertices.size(); i++) {
-            for (int j = i + 1; j < vertices.size(); j++) {
-                
-                if (matriz.get(i).get(j) == 1) {
-                    
-                    String v1 = vertices.get(i);
-                    String v2 = vertices.get(j);
-                    
-                    if(v1.compareTo(v2) < 0){
-                        arestas.add(
-                            "\"" + v1 + "\" -- \"" + v2 + "\";"
-                        );
-                    }
-                    else {
-                        arestas.add(
-                            "\"" + v2 + "\" -- \"" + v1 + "\";"
-                        );
-                    }
-                }    
-            }
 
-            boolean isIsolated = true;
-            for(int j = 0; j < vertices.size(); j++){
-                if(matriz.get(i).get(j) == 1){
-                    isIsolated = false;
-                    break;
-                }
-            }
+            String origem = vertices.get(i);
 
-            if(isIsolated){
+            if(listaAdjacencia.get(i).isEmpty()){
                 verticesIsolados.add(
-                    "\"" + vertices.get(i) + "\";"
+                    "\"" + origem + "\";"
                 );
+                continue;
+            }
+
+            for (String destino : listaAdjacencia.get(i)) {
+
+                if (origem.compareTo(destino) < 0) {
+                    arestas.add(
+                        "\"" + origem + "\" -- \"" + destino + "\";"
+                    );
+                }
             }
         }
 
