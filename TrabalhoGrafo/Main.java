@@ -1,3 +1,6 @@
+// Leonardo Kenzo Tanaka - 16882154
+// Pedro Teidi de Sá Yamacita - 16897290
+
 import java.util.Scanner;
 
 public class Main {
