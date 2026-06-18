@@ -2,52 +2,43 @@ package atividadePolimorfismo;
 import java.util.ArrayList;
 import java.util.List;
 
-class Agenda {
+public class Agenda {
     private List<Contato> contatos = new ArrayList<>();
 
     public void adicionar(Contato c) { contatos.add(c); }
-
     public void remover(Contato c) { contatos.remove(c); }
+    
+    public void visualizarTodos() {
+        for (Contato c : contatos) c.imprimir();
+    }
 
-    public Contato buscarPorNome(String nome) {
+    public Contato pesquisar(String termo) {
         for (Contato c : contatos) {
-            if (c.getNome().equalsIgnoreCase(nome)) return c;
+            if (c.getNome().equalsIgnoreCase(termo) || c.getId().equals(termo)) return c;
         }
         return null;
     }
 
-    public void visualizarTodos() {
-        for (Contato c : contatos) {
-            System.out.println(c.toString());
-        }
-    }
-
-    // Bubble Sort
     public void ordena() {
         int n = contatos.size();
         for (int i = 0; i < n - 1; i++) {
             for (int j = 0; j < n - i - 1; j++) {
-                Contato c1 = contatos.get(j);
-                Contato c2 = contatos.get(j + 1);
-
-                boolean deveTrocar = false;
-                
-                // Pessoa Física vem antes de Jurídica
-                if (!c1.isPessoaFisica() && c2.isPessoaFisica()) {
-                    deveTrocar = true;
-                } 
-                // Se forem do mesmo tipo, ordena por CPF/CNPJ
-                else if (c1.isPessoaFisica() == c2.isPessoaFisica()) {
-                    if (c1.getIdentificador().compareTo(c2.getIdentificador()) > 0) {
-                        deveTrocar = true;
-                    }
-                }
-
-                if (deveTrocar) {
-                    contatos.set(j, c2);
-                    contatos.set(j + 1, c1);
+                if (deveTrocar(contatos.get(j), contatos.get(j + 1))) {
+                    Contato temp = contatos.get(j);
+                    contatos.set(j, contatos.get(j + 1));
+                    contatos.set(j + 1, temp);
                 }
             }
         }
+    }
+
+    private boolean deveTrocar(Contato c1, Contato c2) {
+        boolean isC1Fisica = c1 instanceof PessoaFisica;
+        boolean isC2Fisica = c2 instanceof PessoaFisica;
+        
+        if (isC1Fisica && !isC2Fisica) return false;
+        if (!isC1Fisica && isC2Fisica) return true;
+        
+        return c1.getId().compareTo(c2.getId()) > 0;
     }
 }

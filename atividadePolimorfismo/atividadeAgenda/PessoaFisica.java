@@ -3,7 +3,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 // Subclasse PF
-class PessoaFisica extends Contato{
+public class PessoaFisica extends Contato {
     private String cpf;
     private String dataNascimento;
     private String estadoCivil;
@@ -16,8 +16,10 @@ class PessoaFisica extends Contato{
     }
 
     @Override
-    public String getIdentificador() { return cpf; }
+    public String getId() { return cpf; }
 
     @Override
-    public boolean isPessoaFisica() { return true; }
+    public void imprimir() {
+        System.out.println("PF: " + nome + " | CPF: " + cpf);
+    }
 }

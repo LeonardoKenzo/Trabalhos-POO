@@ -1,54 +1,51 @@
 package atividadePolimorfismo.atividadeEstoque;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
-class Loja {
-    private List<Produto> estoque = new ArrayList<>();
+public class Loja {
+    // Mapeia Codigo de Barras -> Array contendo [Produto, Quantidade]
+    private Map<String, Object[]> estoque = new HashMap<>();
 
-    public void adicionarProduto(Produto p) {
-        Produto existente = buscarPorCodigo(p.getCodigoBarras());
-        if (existente != null) {
-            existente.adicionarEstoque(p.getQuantidade());
+    public void adicionarProduto(Produto p, int quantidade) {
+        if (estoque.containsKey(p.getCodigoBarras())) {
+            int qtdAtual = (int) estoque.get(p.getCodigoBarras())[1];
+            estoque.put(p.getCodigoBarras(), new Object[]{p, qtdAtual + quantidade});
         } else {
-            estoque.add(p);
+            estoque.put(p.getCodigoBarras(), new Object[]{p, quantidade});
         }
     }
 
     public Produto buscarPorCodigo(String codigo) {
-        for (Produto p : estoque) {
-            if (p.getCodigoBarras().equals(codigo)) return p;
-        }
+        if (estoque.containsKey(codigo)) return (Produto) estoque.get(codigo)[0];
         return null;
     }
 
-    public void venderProduto(String codigo, int quantidade) {
-        Produto p = buscarPorCodigo(codigo);
-        if (p != null && p.getQuantidade() >= quantidade) {
-            p.subtrairEstoque(quantidade);
-            System.out.println("Venda realizada: " + p.getNome());
-        } else {
-            System.out.println("Estoque insuficiente ou produto não encontrado.");
-        }
-    }
-
-    public void verificarEstoque() {
-        System.out.println("--- RELATÓRIO DE ESTOQUE ---");
-        int totalLivros = 0, totalCDs = 0, totalDVDs = 0;
-
-        for (Produto p : estoque) {
-            System.out.println(p.getNome() + " (" + p.getCategoria() + "): " + p.getQuantidade() + " unidades.");
-            
-            // Contabilização por categoria 
-            switch (p.getCategoria()) {
-                case "Livros": totalLivros += p.getQuantidade(); break;
-                case "CDs": totalCDs += p.getQuantidade(); break;
-                case "DVDs": totalDVDs += p.getQuantidade(); break;
+    public boolean vender(String codigo) {
+        if (estoque.containsKey(codigo)) {
+            int qtdAtual = (int) estoque.get(codigo)[1];
+            if (qtdAtual > 0) {
+                estoque.put(codigo, new Object[]{estoque.get(codigo)[0], qtdAtual - 1});
+                return true;
             }
         }
-        
-        System.out.println("\nResumo por Categoria:");
-        System.out.println("Livros: " + totalLivros);
-        System.out.println("CDs: " + totalCDs);
-        System.out.println("DVDs: " + totalDVDs);
+        return false;
+    }
+
+    public void imprimirEstoque() {
+        Map<String, Integer> porCategoria = new HashMap<>();
+        System.out.println("--- Estoque por Produto ---");
+        for (Object[] dados : estoque.values()) {
+            Produto p = (Produto) dados[0];
+            int qtd = (int) dados[1];
+            System.out.println(p.getNome() + " (" + p.getCategoria() + ") - Qtd: " + qtd);
+            
+            porCategoria.put(p.getCategoria(), porCategoria.getOrDefault(p.getCategoria(), 0) + qtd);
+        }
+        System.out.println("--- Estoque por Categoria ---");
+        for (Map.Entry<String, Integer> entry : porCategoria.entrySet()) {
+            System.out.println(entry.getKey() + ": " + entry.getValue());
+        }
     }
 }

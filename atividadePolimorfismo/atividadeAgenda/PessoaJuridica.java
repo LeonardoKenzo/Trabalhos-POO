@@ -3,7 +3,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 // Subclass PJ
-class PessoaJuridica extends Contato {
+public class PessoaJuridica extends Contato {
     private String cnpj;
     private String inscricaoEstadual;
     private String razaoSocial;
@@ -16,8 +16,10 @@ class PessoaJuridica extends Contato {
     }
 
     @Override
-    public String getIdentificador() { return cnpj; }
+    public String getId() { return cnpj; }
 
     @Override
-    public boolean isPessoaFisica() { return false; }
+    public void imprimir() {
+        System.out.println("PJ: " + nome + " | CNPJ: " + cnpj);
+    }
 }

@@ -16,11 +16,7 @@ abstract class Contato {
 
     public String getNome() { return nome; }
 
-    public abstract String getIdentificador(); // CPF ou CNPJ
-    public abstract Boolean isPessoaFisica(); // Ordenação
-
-    @Override
-    public String toString() {
-        return "Nome: " + nome + " | ID: " + getIdentificador();
-    }
+    public String getNome() { return nome; }
+    public abstract String getId(); // Retorna CPF ou CNPJ
+    public abstract void imprimir();
 }
